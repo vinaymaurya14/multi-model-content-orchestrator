@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  orchestrator:
+    build: .
+    ports:
+      - "8002:8002"
+    environment:
+      - DEMO_MODE=true
+      - DEFAULT_PROVIDER=mock
+      - MONTHLY_COST_LIMIT=10.0
+      - COST_ALERT_THRESHOLD=0.8
+      - HOST=0.0.0.0
+      - PORT=8002
+      - LOG_LEVEL=info
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; r = httpx.get('http://localhost:8002/health'); r.raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
